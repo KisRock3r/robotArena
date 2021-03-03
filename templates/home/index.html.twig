@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=2" />
+    <title>Robots</title>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <div class="card text-center">
+            <div class="card-header text-white bg-secondary text-center">
+                <button type="button" class="btn btn-dark font-weight-bold text-white float-left mt-2" id="fightBtn">
+                    <span class="text-white mr-2 fa fa-play-circle"></span>Fight
+                </button>
+                <span class="h1 mr-n5">RobotArena</span>
+                <button type="button" class="btn btn-success font-weight-bold text-white float-right mt-2"
+                    id="addNewRobot">
+                    <span class="text-white mr-2 fa fa-plus"></span>Add new
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless table-striped text-center">
+                        <thead>
+                            <tr>
+                                <th scope="col" data-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                                    title="Select at least two robot for a fight!">#</th>
+                                <th scope="col">ID</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Power</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="robotList">
+                            {% if robots |length == 0 %}
+                            <tr>
+                                <td colspan="5">No record found!</td>
+                            </tr>
+                            {% endif %}
+                            {% for key,robot in robots %}
+                            <tr>
+                                <td>
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input selectFighter" type="checkbox" id="{{robot.id}}"
+                                            name="selectFighter">
+                                    </div>
+                                </td>
+                                <td class="align-middle">{{robot.id}}</td>
+                                <td class="align-middle">{{robot.name}}</td>
+                                <td class="align-middle">{{robot.type|capitalize}}</td>
+                                <td class="align-middle">{{robot.power}}</td>
+                                <td class="btn-group-md btn-group-vertical">
+                                    <button class="btn btn-info editRobot text-white mb-1 rounded"
+                                        id="{{robot.id}}"><span class="fa fa-edit"></span>Edit</button>
+                                    <button class="btn btn-danger deleteRobot text-white mt-1 rounded "
+                                        id="{{robot.id}}"><span class="fa fa-trash"></span>Delete</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer text-muted">
+                Rock3r.
+            </div>
+        </div>
+    </div>
+    {{ include('home/modals/winnerModal.html.twig')}}
+    {{ include('home/modals/addModal.html.twig')}}
+    {{ include('home/modals/editModal.html.twig')}}
+    {{ include('home/modals/deleteModal.html.twig')}}
+
+    <script>
+        $(document).ready(function () {
+            // Tooltip for some xtra info
+            $('[data-toggle="tooltip"]').tooltip();
+
+            // Fight button color changer
+            $('body').on('change', 'input[type="checkbox"]', function () {
+                if ($('input[name="selectFighter"]:checked').length === 2) {
+                    $('#fightBtn').removeClass('btn-dark');
+                    $('#fightBtn').addClass('btn-success');
+                } else {
+                    $('#fightBtn').addClass('btn-dark');
+                    $('#fightBtn').removeClass('btn-success');
+                }
+            });
+        });
+        // Fight button
+        $('#fightBtn').on('click', function () {
+            if ($(this).hasClass('btn-success')) {
+                console.debug("Fight started!");
+                let fighters = $("input:checkbox:checked").map(function () {
+                    return $(this).attr('id');
+                }).toArray();
+
+                $.ajax({
+                    url: `getStronger/${fighters[0]}/${fighters[1]}`,
+                    method: 'GET',
+                    dataType: 'JSON',
+                    success: function (response) {
+                        //$("#winnerModal").dialog("option","title", "You new title");
+                        $('#winnerModal').modal('show');
+                        $('.winnerTitle').text(`${response.name} is the winner!`);
+                        $('.winnerBody').html(`<p class="text-center h5">Name: ${response.name}<br/>Type: ${response.type}<br/>Power: ${response.power}</p>`);
+                        console.debug(`${response.name} is the winner!`)
+                        $('#fightBtn').addClass('btn-dark');
+                        $('#fightBtn').removeClass('btn-success');
+                        $('input:checkbox:checked').each(function() {
+                            this.checked = false;
+                        });
+                    },
+                });
+            } else {
+                console.debug("Select two robot for a fight!");
+            }
+
+        });
+        // Get data and show in table
+        function loadList() {
+            $.ajax({
+                url: "{{ path('getRobots') }}",
+                success: function (response) {
+                    let table = '';
+
+                    $('#robotList').html('');
+
+                    $.each(response, function (index, value) {
+
+                        table = `<tr id="${value.id}">
+                                <td>
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input selectFighter" type="checkbox" id="${value.id}" name="selectFighter">
+                                    </div>
+                                </td>
+                                <td class="align-middle">${value.id}</td>
+                                <td class="align-middle">${value.name}</td>
+                                <td class="align-middle">${value.type}</td>
+                                <td class="align-middle">${value.power}</td>
+                                <td class = "btn-group-md btn-group-vertical">
+                                    <button class="btn btn-info editRobot text-white mb-1 rounded" id="${value.id}"><span class="fa fa-edit"></span>Edit</button>
+                                    <button class="btn btn-danger deleteRobot text-white mt-1 rounded" id="${value.id}"><span class="fa fa-trash"></span>Delete</button>
+                                </tr>`;
+                        $('#robotList').append(table);
+                    });
+                }
+            });
+        };
+        //Add robot ajax
+        $('body').on('click', '#addNewRobot', function () {
+            $('#addRobotModal').modal('show');
+        });
+
+        $('body').on('click', '#addNew', function () {
+            $.ajax({
+                url: '/addRobot',
+                method: 'POST',
+                dataType: 'JSON',
+                data: {
+                    name: $('#addName').val(),
+                    type: $('#addrobotTypeList').val(),
+                    power: $('#addPower').val(),
+                },
+                success: function (result) {
+                    $('#addNew').text('Add');
+                    $('#addRobotModal').modal('hide');
+                    document.getElementById('addRobotForm').reset();
+                    console.debug("Robot added successfully.");
+                    loadList();
+                },
+                error: function (result) {
+                    const errors = $.parseJSON(result.responseText);
+                    $.each(errors, function (key, value) {
+                        console.log(value);
+                    });
+                },
+                complete: loadList
+            });
+        })
+        //Edit robot ajax
+        $('body').on('click', '.editRobot', function () {
+            $('#editRobotModal').modal('show');
+            robotId = $(this).attr('id');
+            $.ajax({
+                url: 'getRobots/' + robotId,
+                method: 'POST',
+                dataType: 'JSON',
+                data: {
+                    id: robotId
+                },
+                success: function (response) {
+                    $("#editId").val(response.id);
+                    $("#editName").val(response.name);
+                    $("#editType").val(response.type);
+                    $("#editPower").val(response.power);
+
+                }
+            });
+        })
+        $('#editOk').click(function () {
+            let selectedStatus
+            $("select#editrobotTypeList").change(function () {
+                selectedStatus = $(this).children("option:selected").val();
+            });
+            $.ajax({
+                url: 'updateRobot/' + robotId,
+                beforeSend: function () {
+                    $('#editOk').text('Updating...');
+                    console.log(selectedStatus);
+                },
+                method: 'POST',
+                dataType: 'JSON',
+                data: {
+                    id: robotId,
+                    name: $('#editName').val(),
+                    type: $('select#editrobotTypeList').children("option:selected").val(),
+                    power: $('#editPower').val(),
+                },
+                success: function (result) {
+                    $('#editOk').text('Edit');
+                    $('#editRobotModal').modal('hide');
+                    loadList();
+                    console.debug("Robot updated successfully.");
+                },
+                error: function (result) {
+                    const errors = $.parseJSON(result.responseText);
+                    $.each(errors, function (key, value) {
+                        console.log(value);
+                    });
+                }
+            });
+        });
+
+        // Delete robot ajax
+        $('body').on('click', '.deleteRobot', function () {
+            robotId = $(this).attr('id');
+            $('#confirmModal').modal('show');
+        });
+        $('#delOk').click(function () {
+            $.ajax({
+                url: '/deleteRobot/' + robotId,
+                beforeSend: function () {
+                    $('#delOk').text('Deleting..');
+                },
+                success: function (query) {
+                    setTimeout(function () {
+                        $('#delOk').text('Delete');
+                        $('#confirmModal').modal('hide');
+                        loadList();
+                        console.debug("Robot deleted successfully.");
+                    }, 1000);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

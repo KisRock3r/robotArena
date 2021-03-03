@@ -1,0 +1,50 @@
+<div class="modal fade" id="editRobotModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit robot</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="m-3" id="editRobotForm">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">ID</span>
+                        </div>
+                        <input type="text" class="form-control text-center font-weight-bold" id="editId" value="1"
+                            disabled>
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Name</span>
+                        </div>
+                        <input type="text" class="form-control text-center" id="editName" value="">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Type</span>
+                        </div>
+                        <select class="form-control text-center" id="editrobotTypeList">
+                            <option value="Brawler" id="brawler">Brawler</option>
+                            <option value="Aouge" id="rouge">Rouge</option>
+                            <option value="Assault" id="assault">Assault</option>
+                        </select>
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Power</span>
+                        </div>
+                        <input type="text" class="form-control text-center" id="editPower" value="">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="editOk">Edit</button>
+            </div>
+        </div>
+    </div>
+</div>

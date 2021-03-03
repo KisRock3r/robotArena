@@ -1,0 +1,43 @@
+<div class="modal fade" id="addRobotModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add new robot</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="m-3" id="addRobotForm">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Name</span>
+                        </div>
+                        <input type="text" class="form-control text-center" id="addName" value="">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Type</span>
+                        </div>
+                        <select class="form-control" id="addrobotTypeList">
+                            <option value="Brawler" id="brawler">Brawler</option>
+                            <option value="Aouge" id="rouge">Rouge</option>
+                            <option value="Assault" id="assault">Assault</option>
+                        </select>
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Power</span>
+                        </div>
+                        <input type="text" class="form-control text-center" id="addPower" value="">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="addNew">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
